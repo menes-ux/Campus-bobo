@@ -2,6 +2,8 @@ import 'package:campus_bobo/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/fake_auth_repository.dart';
+
 void main() {
   testWidgets('The reporting guide opens and returns to the welcome screen', (
     tester,
@@ -11,9 +13,12 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const CampusBoboApp());
+    final repository = FakeAuthRepository();
+    addTearDown(repository.close);
+    await tester.pumpWidget(CampusBoboApp(authRepository: repository));
+    await tester.pumpAndSettle();
     final guideButton = find.widgetWithText(
-      FilledButton,
+      OutlinedButton,
       'How reporting works',
     );
     await tester.scrollUntilVisible(guideButton, 300);

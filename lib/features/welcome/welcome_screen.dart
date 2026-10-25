@@ -6,7 +6,9 @@ import '../../core/widgets/icon_tile.dart';
 import 'reporting_guide_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({super.key});
+  const WelcomeScreen({super.key, required this.onGetStarted});
+
+  final VoidCallback onGetStarted;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +88,11 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 FilledButton(
+                  onPressed: onGetStarted,
+                  child: const Text('Get started'),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => const ReportingGuideScreen(),
