@@ -8,10 +8,11 @@ A Flutter mobile app for reporting campus issues and tracking their resolution w
 - Welcome screen and reporting guide with mobile navigation.
 - Guidance for facilities, water, electricity, furniture, sanitation, and safety reports.
 - Firebase Core, Firebase Authentication, and Provider dependencies installed.
+- Android registered with Firebase project `campus-bobo`, with Firebase initialized before the app starts.
 
-Authentication, incident submission, report browsing, photo uploads, and staff workflows are not connected yet. Firebase will be configured in the next stage.
+Sign-up, login, incident submission, report browsing, photo uploads, and staff workflows are not implemented yet. Firebase startup is configured for Android only.
 
-Follow the [Firebase setup guide](docs/firebase_setup.md) to create the project and enable email/password sign-in before connecting the Android app.
+The [Firebase setup guide](docs/firebase_setup.md) covers project creation, email/password sign-in, and Android configuration.
 
 ## Run locally
 
@@ -19,16 +20,19 @@ Start an Android emulator in Android Studio or connect an Android device, then r
 
 ```sh
 flutter pub get
-flutter run
+flutter run -d emulator-5554
 ```
 
 ## Checks
 
 ```sh
-dart format --output=none --set-exit-if-changed lib test
+dart format --output=none --set-exit-if-changed lib test integration_test
 flutter analyze
-flutter test
+flutter test test
+flutter test integration_test/firebase_startup_test.dart -d emulator-5554
 ```
+
+The integration test requires a running Android emulator. Use `flutter devices` to find its ID if it differs from `emulator-5554`. This check runs native Firebase initialization and verifies that the welcome screen opens; authentication and database workflows will have separate checks as they are implemented.
 
 ## Project structure
 
@@ -36,18 +40,22 @@ flutter test
 lib/
   main.dart                  App entry point
   app.dart                   MaterialApp configuration
+  firebase_options.dart      Generated Firebase platform configuration
   core/theme/                Shared colors and theme
   core/widgets/              Reusable visual components
   features/welcome/          Welcome screen and reporting guide
 assets/fonts/                Poppins fonts and license
 test/                        Widget navigation test
+integration_test/            Firebase startup check on Android
 ```
 
-## Planned Firebase integration
+## Firebase services
 
 Firebase Authentication will handle sign-in and email verification. Cloud Firestore will store user profiles and incident records, and Firebase Storage will hold incident photos. Provider will manage shared authentication and incident state.
 
-Staff permissions will be assigned explicitly and enforced by Firebase rules. An email domain alone will not grant staff access. The complete ALU student and staff email domains still need confirmation before domain validation is implemented.
+Firebase Core is initialized in `main.dart`. The generated Android configuration is checked into the repository; it identifies the Firebase app and does not grant administrative access. Firestore and Storage provisioning and access rules remain part of later stages.
+
+Student registration will use `@alustudent.com` with email verification. The complete staff email domain still needs confirmation. Staff permissions will be assigned explicitly and enforced by Firebase rules; an email domain alone will not grant staff access.
 
 ## Development workflow
 

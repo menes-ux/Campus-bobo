@@ -24,7 +24,7 @@ The console may group optional features differently; the goal is a Firebase proj
 6. Leave **Email link (passwordless sign-in)** disabled.
 7. Click **Save**.
 
-Email verification will be implemented in the Flutter app. Student and staff permissions will be enforced separately; enabling this provider does not grant staff privileges.
+Email verification will be implemented in the Flutter app, with student registration restricted to `@alustudent.com`. Student and staff permissions will be enforced separately; enabling this provider does not grant staff privileges. The full staff email domain still needs confirmation before staff email validation is added.
 
 ## 3. Find the project ID
 
@@ -63,7 +63,7 @@ Login may behave differently when launched by an agent. Complete Google sign-in 
 
 ## 5. Connect Android after login
 
-The Android application ID is currently `com.example.campus_bobo` in `android/app/build.gradle.kts`. FlutterFire CLI will register or match that Android app and generate its Firebase configuration after the project exists.
+The Android application ID is `com.example.campus_bobo` in `android/app/build.gradle.kts`. The app is registered with project `campus-bobo`, and FlutterFire CLI has generated the Android configuration.
 
 From the project root, the configuration command is:
 
@@ -80,7 +80,27 @@ After configuration:
 3. Run analysis and the widget test.
 4. Check that the app still launches on the Android emulator.
 
-Keep browser login and consent in your own session. The Firebase SDK dependencies are already installed; Firebase has not yet been initialized in `main.dart`.
+Firebase is initialized in `main.dart`, before `CampusBoboApp` is started. The configuration includes `lib/firebase_options.dart`, `android/app/google-services.json`, and FlutterFire platform mappings in `firebase.json`. The Google Services Gradle plugin is configured in the Android build files, and internet permission is declared in the main Android manifest for both debug and release builds.
+
+## 6. Check Android startup
+
+With the Android emulator running, use:
+
+```powershell
+flutter analyze
+flutter test test
+flutter test integration_test/firebase_startup_test.dart -d emulator-5554
+```
+
+The integration test starts the app with the real Android Firebase plugin and verifies that the default Firebase app belongs to `campus-bobo` and that the welcome screen renders. It does not create accounts or incident records.
+
+After the test, start the normal app again with:
+
+```powershell
+flutter run -d emulator-5554
+```
+
+Run `flutter devices` to find the device ID if it differs. A full rebuild is required after native Firebase configuration changes; hot reload alone will not apply them.
 
 ## Billing and later services
 
