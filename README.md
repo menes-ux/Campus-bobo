@@ -7,8 +7,11 @@ A Flutter mobile app for reporting campus issues and tracking their resolution w
 - White, yellow, and black theme with bundled Poppins fonts.
 - Welcome screen and reporting guide with mobile navigation.
 - Guidance for facilities, water, electricity, furniture, sanitation, and safety reports.
+- Firebase Core, Firebase Authentication, and Provider dependencies installed.
 
 Authentication, incident submission, report browsing, photo uploads, and staff workflows are not connected yet. Firebase will be configured in the next stage.
+
+Follow the [Firebase setup guide](docs/firebase_setup.md) to create the project and enable email/password sign-in before connecting the Android app.
 
 ## Run locally
 
@@ -45,6 +48,12 @@ test/                        Widget navigation test
 Firebase Authentication will handle sign-in and email verification. Cloud Firestore will store user profiles and incident records, and Firebase Storage will hold incident photos. Provider will manage shared authentication and incident state.
 
 Staff permissions will be assigned explicitly and enforced by Firebase rules. An email domain alone will not grant staff access. The complete ALU student and staff email domains still need confirmation before domain validation is implemented.
+
+## Development workflow
+
+Work in small, meaningful checkpoints, with a target of more than 50 commits across setup, features, security rules, testing, and documentation. Describe each stage before changing code. Commit completed work after checking it, and push after each milestone or work session.
+
+Firebase Console tasks are documented as numbered steps. Console configuration is separate from repository changes and does not create a Git commit by itself.
 
 ## Font license
 
