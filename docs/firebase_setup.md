@@ -35,17 +35,50 @@ Email verification will be implemented in the Flutter app. Student and staff per
 
 The project ID is a public identifier. Account passwords, access tokens, and service-account keys are not needed for this step.
 
-## 4. Connect Android in the next stage
+## 4. Install the local tools and sign in
+
+The Firebase project ID for Campus Bobo is `campus-bobo`. It is recorded as the default project in `.firebaserc`.
+
+Firebase CLI and FlutterFire CLI are installed on the development computer. To set them up on another computer, run:
+
+```powershell
+npm.cmd install -g firebase-tools
+dart pub global activate flutterfire_cli
+```
+
+To sign in from your own VS Code terminal, run:
+
+```powershell
+firebase.cmd login
+```
+
+1. If optional Gemini or CLI usage-reporting prompts appear, answer **No** to skip them.
+2. If Chrome opens, select the Google account that owns `campus-bobo`.
+3. Review the requested access and approve it to connect the CLI.
+4. If a sign-in link is printed instead, open it in Chrome and follow the terminal instructions.
+5. Complete any authorization-code step in your own terminal.
+6. Wait for the terminal to confirm successful login.
+
+Login may behave differently when launched by an agent. Complete Google sign-in in your own terminal/browser session; it does not require sharing account credentials in chat.
+
+## 5. Connect Android after login
 
 The Android application ID is currently `com.example.campus_bobo` in `android/app/build.gradle.kts`. FlutterFire CLI will register or match that Android app and generate its Firebase configuration after the project exists.
 
-The local sequence will be:
+From the project root, the configuration command is:
 
-1. Install Firebase CLI and FlutterFire CLI.
-2. Sign in through the browser using Firebase CLI.
-3. Configure the project with Android selected.
-4. Initialize Firebase before starting the Flutter app.
-5. Check that the app still launches on the Android emulator.
+```powershell
+& "$env:LOCALAPPDATA\Pub\Cache\bin\flutterfire.bat" configure --project=campus-bobo --platforms=android --android-package-name=com.example.campus_bobo
+```
+
+Using the executable's full path avoids changing Windows PATH for FlutterFire. Only Android is selected for this assignment's initial setup.
+
+After configuration:
+
+1. Inspect the generated `lib/firebase_options.dart`, `android/app/google-services.json`, and any Gradle or Firebase configuration changes.
+2. Initialize Firebase before starting the Flutter app.
+3. Run analysis and the widget test.
+4. Check that the app still launches on the Android emulator.
 
 Keep browser login and consent in your own session. The Firebase SDK dependencies are already installed; Firebase has not yet been initialized in `main.dart`.
 
