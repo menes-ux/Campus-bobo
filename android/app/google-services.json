@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "632616102040",
+    "project_id": "campus-bobo",
+    "storage_bucket": "campus-bobo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632616102040:android:cfd4a1b73fb4d5b1e948ed",
+        "android_client_info": {
+          "package_name": "com.example.campus_bobo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuV5Xejuw4M1RCq_JE9KCz63SoDmRI0s0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
