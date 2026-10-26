@@ -323,7 +323,7 @@ class _SubmissionSuccess extends StatelessWidget {
         const SizedBox(height: 28),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Back to account'),
+          child: const Text('Done'),
         ),
       ],
     );

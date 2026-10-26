@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../incidents/presentation/incident_list_screen.dart';
 import '../../incidents/presentation/report_incident_screen.dart';
 import '../../welcome/reporting_guide_screen.dart';
 import '../../profile/domain/user_profile.dart';
@@ -56,6 +57,18 @@ class AccountScreen extends StatelessWidget {
                 ),
           icon: const Icon(Icons.add_rounded),
           label: const Text('Report an incident'),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: auth.isBusy
+              ? null
+              : () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => IncidentListScreen(viewer: profile),
+                  ),
+                ),
+          icon: const Icon(Icons.view_list_outlined),
+          label: const Text('Browse reports'),
         ),
         const SizedBox(height: 12),
         OutlinedButton.icon(
