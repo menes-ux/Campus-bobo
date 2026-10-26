@@ -7,6 +7,12 @@ abstract final class AppColors {
   static const canvas = Color(0xFFF7F7F7);
   static const border = Color(0xFFECECEC);
   static const paleYellow = Color(0xFFFFF7DF);
+  static const paleBlue = Color(0xFFEEF3FF);
+  static const blue = Color(0xFF3469CA);
+  static const paleGreen = Color(0xFFEAF6EF);
+  static const green = Color(0xFF2D7A4E);
+  static const paleOrange = Color(0xFFFFF0E4);
+  static const orange = Color(0xFFAC601F);
 }
 
 abstract final class AppTheme {

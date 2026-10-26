@@ -18,9 +18,9 @@ class IncidentStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final background = switch (status) {
-      IncidentStatus.submitted => AppColors.paleYellow,
-      IncidentStatus.inProgress => AppColors.yellow,
-      IncidentStatus.resolved => AppColors.ink,
+      IncidentStatus.submitted => AppColors.paleOrange,
+      IncidentStatus.inProgress => AppColors.paleBlue,
+      IncidentStatus.resolved => AppColors.paleGreen,
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -33,9 +33,11 @@ class IncidentStatusBadge extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: status == IncidentStatus.resolved
-              ? Colors.white
-              : AppColors.ink,
+          color: switch (status) {
+            IncidentStatus.submitted => AppColors.orange,
+            IncidentStatus.inProgress => AppColors.blue,
+            IncidentStatus.resolved => AppColors.green,
+          },
         ),
       ),
     );
