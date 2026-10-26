@@ -8,12 +8,12 @@ This stage implements the assignment's registration, login, logout, session hand
 
 - `AuthRepository` defines the operations needed by the app. `FirebaseAuthRepository` implements them using Firebase Authentication.
 - `AuthController` listens for user changes and exposes loading, signed-out, unverified, verified, and unsupported-email states through Provider.
-- `AuthGate` selects the welcome screen, sign-in form, verification screen, or verified account screen from that state.
+- `AuthGate` selects the welcome screen, sign-in form, verification screen, or verified profile gate from that state. The profile gate creates or loads `users/{uid}` before opening the account screen.
 - Form state, password visibility, and switching between login and registration stay local to the screens.
 
 New accounts save a display name and request a verification email. Verification can be refreshed manually or when the app resumes. A successful refresh also refreshes the Firebase ID token. Failed email delivery leaves the account signed in on the verification screen, where sending can be retried. Successful email sends have a 60-second resend cooldown.
 
-The form and controller both validate the student email domain. This is a user-interface restriction. Firestore and Storage rules must also enforce verified ALU access when those services are added.
+The form and controller both validate the student email domain. Firestore profile rules also require verified ALU student accounts for profile creation and prevent client role changes. Incident and Storage access rules will be added with those workflows.
 
 ## Manual demo checklist
 
@@ -50,7 +50,7 @@ In a second terminal, run:
 flutter test integration_test/auth_flow_test.dart -d emulator-5554
 ```
 
-This test connects the Android Firebase SDK to the local Auth emulator, registers a temporary student account, applies its local verification code, and checks login and logout. It does not send real emails. The emulator connection is configured only by the test. Cleartext access to the local emulator is enabled only in the debug Android manifest.
+This test connects the Android Firebase SDK to the local Auth emulator, registers a temporary student account, applies its local verification code, and checks login and logout. It uses a fake profile repository to keep that authentication test independent of live Firestore. It does not send real emails. The emulator connection is configured only by the test. Cleartext access to the local emulator is enabled only in the debug Android manifest.
 
 Stop the Auth emulator with **Ctrl+C** when finished, then run the normal app again for a live Firebase demo.
 

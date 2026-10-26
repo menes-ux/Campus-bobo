@@ -92,7 +92,7 @@ flutter test test
 flutter test integration_test/firebase_startup_test.dart -d emulator-5554
 ```
 
-The integration test starts the app with the real Android Firebase plugin and verifies that the default Firebase app belongs to `campus-bobo` and that the welcome screen renders. It does not create accounts or incident records.
+The integration test starts the app with the real Android Firebase plugin and verifies that the default Firebase app belongs to `campus-bobo` and that the authentication flow opens. It does not create accounts or incident records. An existing verified session may also create its missing Firestore profile through the normal app flow.
 
 After the test, start the normal app again with:
 

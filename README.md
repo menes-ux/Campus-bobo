@@ -10,7 +10,7 @@ A Flutter mobile app for reporting campus issues and tracking their resolution w
 - Firebase Core, Firebase Authentication, and Provider dependencies installed.
 - Android registered with Firebase project `campus-bobo`, with Firebase initialized before the app starts.
 - Student registration, login, logout, and email verification using Provider for session state.
-- Firestore dependency and initial profile rules prepared. Database creation and rule deployment are pending.
+- Firestore profile rules deployed. Verified accounts create a student profile once and display their saved role.
 
 Incident submission, report browsing, photo uploads, and staff workflows are the next stages. Firebase is configured for Android only.
 
@@ -49,6 +49,7 @@ lib/
   core/widgets/              Reusable visual components
   features/auth/             Firebase repository, session state, and auth screens
   features/welcome/          Welcome screen and reporting guide
+  features/profile/          Firestore profiles and saved account roles
 assets/fonts/                Poppins fonts and license
 test/                        Authentication state, validation, and screen checks
 integration_test/            Android Firebase startup and authentication checks
@@ -58,7 +59,7 @@ integration_test/            Android Firebase startup and authentication checks
 
 Firebase Authentication handles registration, login, email verification, and logout. Provider manages the shared authentication state. Cloud Firestore will store user profiles and incident records, and Firebase Storage will hold incident photos.
 
-Firebase Core is initialized in `main.dart`. The generated Android configuration is checked into the repository; it identifies the Firebase app and does not grant administrative access. Firestore and Storage provisioning and access rules remain part of later stages.
+Firebase Core is initialized in `main.dart`. The generated Android configuration is checked into the repository; it identifies the Firebase app and does not grant administrative access. Firestore stores profiles under `users/{uid}` with `email`, `displayName`, `role`, and `createdAt`. New profiles always start as `student`, and existing profiles are preserved. Incident rules and Storage setup are part of later stages.
 
 Student registration uses `@alustudent.com`. Unverified users remain on the verification screen, and restored accounts from other domains are blocked. The complete staff email domain still needs confirmation. Staff permissions will be assigned explicitly and enforced by Firebase rules; an email domain alone will not grant staff access.
 

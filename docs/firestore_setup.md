@@ -22,7 +22,7 @@ Stay on the project's current Spark plan for this step. No Storage billing setup
 - `firestore.indexes.json` records composite indexes as report queries are added. No custom indexes are needed yet.
 - `firebase.json` points the Firebase CLI to these files.
 
-The app does not write user profiles or incidents yet. The profile connection will be added after the database exists and the rules are deployed.
+The rules and index configuration have been deployed to `campus-bobo`. After email verification, the app creates a missing profile and watches it for changes. Incident storage will be added in the next stage.
 
 ## Initial data structure
 
@@ -47,7 +47,19 @@ From the project root:
 firebase.cmd deploy --only firestore:rules,firestore:indexes --project campus-bobo
 ```
 
-The Firebase CLI compiles and deploys the rules during this step. The rules are prepared locally until deployment succeeds. Production mode initially denies app access, so authentication will continue to work while database setup is unfinished.
+The Firebase CLI compiles and deploys the rules during this step. Deployment of these initial rules and indexes succeeded on October 26, 2026. Re-run the command after intentional rule changes.
+
+## Check your saved profile
+
+1. Open Campus Bobo and sign in with your verified student account.
+2. The account screen should show **Role: Student**.
+3. Open **Firestore Database > Data** in Firebase Console.
+4. Click **users**, then the document matching your Firebase Authentication UID.
+5. Check the stored email, display name, `student` role, and creation timestamp.
+
+The app uses a transaction to create the document only if it is missing. Reopening the account does not overwrite its role. A snapshot listener keeps the displayed role in sync with the stored profile. A failed profile load shows retry and sign-out controls instead of assuming a role.
+
+For a later staff demo, a trusted project owner can edit a designated account's `role` to the string `staff` in Firebase Console. That account will show **Role: Staff**. At this stage, login still uses the confirmed student domain; staff-specific incident actions are not implemented yet.
 
 ## References
 
