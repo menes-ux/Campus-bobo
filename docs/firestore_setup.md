@@ -22,7 +22,7 @@ Stay on the project's current Spark plan for this step. No Storage billing setup
 - `firestore.indexes.json` records composite indexes as report queries are added. No custom indexes are needed yet.
 - `firebase.json` points the Firebase CLI to these files.
 
-The rules and index configuration have been deployed to `campus-bobo`. After email verification, the app creates a missing profile and watches it for changes. Incident storage will be added in the next stage.
+The rules and index configuration have been deployed to `campus-bobo`. After email verification, the app creates a missing profile and watches it for changes. The [incident submission guide](incident_reporting.md) describes the report collection and its creation rules.
 
 ## Initial data structure
 
@@ -37,7 +37,7 @@ Each user profile will be stored at `users/{firebaseAuthUid}`:
 
 The document ID is the Firebase Authentication UID. The app can read its own profile and create it once. Client updates, collection listing, and deletion are denied at this stage. A trusted project owner can assign `staff` later through Firebase Console; the app cannot grant that role to itself.
 
-Incident collections remain inaccessible until incident-specific rules and workflows are added.
+The `incidents` collection permits validated report creation and individual reads by verified campus members. Collection queries, updates, and deletion remain disabled until their corresponding workflows are added.
 
 ## Deploy after database creation
 
