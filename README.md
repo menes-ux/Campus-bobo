@@ -10,10 +10,13 @@ A Flutter mobile app for reporting campus issues and tracking their resolution w
 - Firebase Core, Firebase Authentication, and Provider dependencies installed.
 - Android registered with Firebase project `campus-bobo`, with Firebase initialized before the app starts.
 - Student registration, login, logout, and email verification using Provider for session state.
+- Firestore dependency and initial profile rules prepared. Database creation and rule deployment are pending.
 
 Incident submission, report browsing, photo uploads, and staff workflows are the next stages. Firebase is configured for Android only.
 
 The [Firebase setup guide](docs/firebase_setup.md) covers project creation, email/password sign-in, and Android configuration.
+
+The [Firestore setup guide](docs/firestore_setup.md) covers database creation and the initial user-profile schema.
 
 ## Run locally
 
