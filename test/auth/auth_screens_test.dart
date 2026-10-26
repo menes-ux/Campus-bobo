@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_auth_repository.dart';
+import '../helpers/fake_incident_repository.dart';
 import '../helpers/fake_user_profile_repository.dart';
 
 Future<void> _reveal(
@@ -31,10 +32,13 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(repository.close);
+    final incidents = FakeIncidentRepository();
+    addTearDown(incidents.close);
     await tester.pumpWidget(
       CampusBoboApp(
         authRepository: repository,
         userProfileRepository: FakeUserProfileRepository(),
+        incidentRepository: incidents,
       ),
     );
     await tester.pumpAndSettle();
@@ -119,6 +123,8 @@ void main() {
     repository.verifyOnReload = true;
     await _reveal(tester, find.text('I have verified my email'));
     await tester.tap(find.text('I have verified my email'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();
     expect(find.text('Your campus account.'), findsOneWidget);
     await _reveal(tester, find.text('Sign out'));

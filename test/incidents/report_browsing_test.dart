@@ -57,8 +57,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await _reveal(tester, find.text('Browse reports'));
-    await tester.tap(find.text('Browse reports'));
+    await tester.tap(find.text('Reports'));
     await tester.pumpAndSettle();
   }
 

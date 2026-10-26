@@ -4,6 +4,7 @@ import 'package:campus_bobo/features/profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_auth_repository.dart';
+import '../helpers/fake_incident_repository.dart';
 import '../helpers/fake_user_profile_repository.dart';
 
 void main() {
@@ -24,11 +25,21 @@ void main() {
     FakeUserProfileRepository profiles,
   ) async {
     final auth = FakeAuthRepository(student);
+    final incidents = FakeIncidentRepository();
     addTearDown(auth.close);
+    addTearDown(incidents.close);
     await tester.pumpWidget(
-      CampusBoboApp(authRepository: auth, userProfileRepository: profiles),
+      CampusBoboApp(
+        authRepository: auth,
+        userProfileRepository: profiles,
+        incidentRepository: incidents,
+      ),
     );
     await tester.pumpAndSettle();
+    if (find.text('Profile').evaluate().isNotEmpty) {
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+    }
   }
 
   testWidgets('Verified users get one student profile', (tester) async {
@@ -66,6 +77,8 @@ void main() {
     profiles.failLoading = false;
     await tester.ensureVisible(find.text('Try again'));
     await tester.tap(find.text('Try again'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();
     expect(find.text('Role: Student'), findsOneWidget);
   });

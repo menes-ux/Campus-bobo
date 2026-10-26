@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../test/helpers/fake_user_profile_repository.dart';
+import '../test/helpers/fake_incident_repository.dart';
 
 Future<void> _reveal(
   WidgetTester tester,
@@ -112,8 +113,13 @@ void main() {
         'flow.${DateTime.now().millisecondsSinceEpoch}@alustudent.com';
     const password = 'Campus-test-password-1';
 
+    final incidents = FakeIncidentRepository();
+    addTearDown(incidents.close);
     await tester.pumpWidget(
-      CampusBoboApp(userProfileRepository: FakeUserProfileRepository()),
+      CampusBoboApp(
+        userProfileRepository: FakeUserProfileRepository(),
+        incidentRepository: incidents,
+      ),
     );
     await tester.pumpAndSettle();
     await _tap(tester, find.text('Get started'));
@@ -132,6 +138,9 @@ void main() {
 
     await auth.applyActionCode(await _actionCode(email, 'VERIFY_EMAIL'));
     await _tap(tester, find.text('I have verified my email'));
+    expect(find.text('Hello, Campus.'), findsOneWidget);
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
     expect(find.text('Your campus account.'), findsOneWidget);
     expect(auth.currentUser!.emailVerified, isTrue);
     expect(find.text('Campus Student'), findsOneWidget);
@@ -141,7 +150,7 @@ void main() {
     await _enter(tester, 'auth-email', email, delta: -250);
     await _enter(tester, 'auth-password', password);
     await _tap(tester, find.byKey(const ValueKey('auth-submit')));
-    await _waitFor(tester, find.text('Your campus account.'));
+    await _waitFor(tester, find.text('Hello, Campus.'));
     expect(auth.currentUser!.email, email);
   });
 }

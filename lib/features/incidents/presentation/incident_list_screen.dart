@@ -14,19 +14,29 @@ import 'report_details_screen.dart';
 import 'report_incident_screen.dart';
 
 class IncidentListScreen extends StatelessWidget {
-  const IncidentListScreen({super.key, required this.viewer});
+  const IncidentListScreen({
+    super.key,
+    required this.viewer,
+    this.initiallyOnlyMine = false,
+    this.initialStatus,
+  });
 
   final UserProfile viewer;
+  final bool initiallyOnlyMine;
+  final IncidentStatus? initialStatus;
 
   @override
   Widget build(BuildContext context) {
     return VerifiedSessionGuard(
       uid: viewer.uid,
       child: ChangeNotifierProvider(
-        create: (_) => IncidentListController(
-          context.read<IncidentRepository>(),
-          viewer.uid,
-        ),
+        create: (_) =>
+            IncidentListController(
+                context.read<IncidentRepository>(),
+                viewer.uid,
+              )
+              ..setOnlyMine(initiallyOnlyMine)
+              ..setStatus(initialStatus),
         child: _ReportBrowser(viewer: viewer),
       ),
     );

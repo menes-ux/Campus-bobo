@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../auth/application/auth_controller.dart';
 import '../../auth/domain/auth_user.dart';
-import '../../auth/presentation/account_screen.dart';
+import '../../dashboard/presentation/main_navigation_screen.dart';
 import '../../auth/presentation/auth_widgets.dart';
 import '../domain/user_profile.dart';
 import '../domain/user_profile_repository.dart';
@@ -78,7 +78,7 @@ class _UserProfileGateState extends State<UserProfileGate> {
             }
             return Provider<UserProfile>.value(
               value: profile,
-              child: const AccountScreen(),
+              child: MainNavigationScreen(profile: profile),
             );
           },
         );
