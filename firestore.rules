@@ -37,7 +37,7 @@ service cloud.firestore {
     }
 
     match /incidents/{incidentId} {
-      allow get: if hasCampusProfile();
+      allow get, list: if hasCampusProfile();
 
       allow create: if hasCampusProfile()
         && request.resource.data.keys().hasAll(['reportedBy', 'title', 'description', 'location', 'category', 'status', 'createdAt', 'updatedAt'])
@@ -57,7 +57,7 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;
 
-      allow list, update, delete: if false;
+      allow update, delete: if false;
     }
 
     match /{document=**} {
