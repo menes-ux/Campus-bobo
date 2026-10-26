@@ -8,15 +8,15 @@
 - [x] Firestore profiles with a default student role and protected role assignment.
 - [x] Incident submission with title, category, description, location, validation, and a report reference.
 - [x] Initial submitted status, server timestamps, and report ownership rules.
+- [x] Live report browsing, text search, category/status filters, and My reports.
+- [x] Report details with live status progress, location, dates, and reference.
 
 ## Remaining app work
 
-1. **Browse reports:** show Firestore reports, search by text, and filter by category and status.
-2. **Report details and tracking:** display the report, its location, and progress through submitted, in progress, and resolved.
-3. **Complete CRUD:** let owners edit or delete their submitted reports with appropriate access rules and confirmation.
-4. **Staff workflow:** use an authorized staff account to review reports and update statuses; enforce permissions in Firestore rules.
-5. **Incident photos:** set up Firebase Storage, select an optional photo, upload it, and display it with its report. Storage requires the Blaze billing setup discussed earlier.
-6. **Final checks:** run the required student and staff workflows on Android and review validation, loading/error feedback, and access controls.
+1. **Complete CRUD:** let owners edit or delete their submitted reports with appropriate access rules and confirmation.
+2. **Staff workflow:** use an authorized staff account to review reports and update statuses; enforce permissions in Firestore rules.
+3. **Incident photos:** set up Firebase Storage, select an optional photo, upload it, and display it with its report. Storage requires the Blaze billing setup discussed earlier.
+4. **Final checks:** run the required student and staff workflows on Android and review validation, loading/error feedback, and access controls.
 
 ## Remaining submission work
 
@@ -29,4 +29,4 @@
 
 ## Next checkpoint
 
-Try submitting a report with a verified account and confirm the document under Firestore's `incidents` collection. Then build report browsing and filtering.
+Try browsing, searching, and opening a saved report. Then add owner editing/deletion and the staff status workflow.

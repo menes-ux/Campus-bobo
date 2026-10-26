@@ -32,7 +32,7 @@ The app trims surrounding whitespace before saving. Reports store the reporter's
 
 A verified ALU account must have a stored student or staff profile to create a report. The owner must match the authenticated UID, all fields must match the allowed schema, and the initial status and timestamps are fixed by the rules. Individual report reads require the same verified campus membership.
 
-Collection queries, report updates, and deletion remain disabled until those workflows are added. Photo handling is a separate upcoming stage.
+Collection queries and individual reads are enabled for verified campus members. Report updates, deletion, and photo handling are upcoming stages. The [browsing guide](report_browsing.md) covers report search, filtering, and details.
 
 ## Code and checks
 

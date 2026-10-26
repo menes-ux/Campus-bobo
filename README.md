@@ -12,14 +12,17 @@ A Flutter mobile app for reporting campus issues and tracking their resolution w
 - Student registration, login, logout, and email verification using Provider for session state.
 - Firestore profile rules deployed. Verified accounts create a student profile once and display their saved role.
 - Incident submission with category, title, description, location, validation, and an initial submitted status.
+- Live report browsing, text search, category/status filters, My reports, and report details with status progress.
 
-Report browsing, search/filtering, editing/deletion, photo uploads, and staff status updates are the next stages. Firebase is configured for Android only.
+Editing/deletion, photo uploads, and staff status updates are the next stages. Firebase is configured for Android only.
 
 The [Firebase setup guide](docs/firebase_setup.md) covers project creation, email/password sign-in, and Android configuration.
 
 The [Firestore setup guide](docs/firestore_setup.md) covers database creation and the initial user-profile schema.
 
 See the [incident submission guide](docs/incident_reporting.md) for the current report workflow and the [project checklist](docs/project_progress.md) for the remaining Canvas requirements.
+
+The [report browsing guide](docs/report_browsing.md) covers search, filters, details, and live status display.
 
 ## Run locally
 
@@ -63,7 +66,7 @@ integration_test/            Android Firebase startup and authentication checks
 
 Firebase Authentication handles registration, login, email verification, and logout. Provider manages the shared authentication state. Cloud Firestore will store user profiles and incident records, and Firebase Storage will hold incident photos.
 
-Firebase Core is initialized in `main.dart`. The generated Android configuration is checked into the repository; it identifies the Firebase app and does not grant administrative access. Firestore stores profiles under `users/{uid}` and reports under `incidents/{id}`. New profiles start as `student`, and existing profiles are preserved. Report creation rules enforce ownership, valid fields, server timestamps, and the initial submitted status. Report queries, updates, deletion, and Storage setup are part of later stages.
+Firebase Core is initialized in `main.dart`. The generated Android configuration is checked into the repository; it identifies the Firebase app and does not grant administrative access. Firestore stores profiles under `users/{uid}` and reports under `incidents/{id}`. New profiles start as `student`, and existing profiles are preserved. Report creation rules enforce ownership, valid fields, server timestamps, and the initial submitted status. Report queries are enabled for verified campus members. Updates, deletion, and Storage setup are part of later stages.
 
 Student registration uses `@alustudent.com`. Unverified users remain on the verification screen, and restored accounts from other domains are blocked. The complete staff email domain still needs confirmation. Staff permissions will be assigned explicitly and enforced by Firebase rules; an email domain alone will not grant staff access.
 

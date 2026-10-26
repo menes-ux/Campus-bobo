@@ -37,7 +37,7 @@ Each user profile will be stored at `users/{firebaseAuthUid}`:
 
 The document ID is the Firebase Authentication UID. The app can read its own profile and create it once. Client updates, collection listing, and deletion are denied at this stage. A trusted project owner can assign `staff` later through Firebase Console; the app cannot grant that role to itself.
 
-The `incidents` collection permits validated report creation and individual reads by verified campus members. Collection queries, updates, and deletion remain disabled until their corresponding workflows are added.
+The `incidents` collection permits validated report creation, collection queries, and individual reads by verified campus members. Updates and deletion remain disabled until their corresponding workflows are added.
 
 ## Deploy after database creation
 
