@@ -1,87 +1,42 @@
-# Campus Bobo
+﻿# Campus Bobo
 
-A Flutter mobile app for reporting campus issues and tracking their resolution within the ALU community.
+Campus Bobo is a Flutter Android application for reporting campus incidents and tracking their resolution. It uses Firebase Authentication, Cloud Firestore, and Provider.
 
-## Current progress
+## Features
 
-- White, yellow, and black theme with bundled Poppins fonts.
-- Welcome screen and reporting guide with mobile navigation.
-- Guidance for facilities, water, electricity, furniture, sanitation, and safety reports.
-- Firebase Core, Firebase Authentication, and Provider dependencies installed.
-- Android registered with Firebase project `campus-bobo`, with Firebase initialized before the app starts.
-- Student registration, login, logout, and email verification using Provider for session state.
-- Firestore profile rules deployed. Verified accounts create a student profile once and display their saved role.
-- Incident submission with category, title, description, location, validation, and an initial submitted status.
-- Live report browsing, text search, category/status filters, My reports, and report details with status progress.
-- Home dashboard with live personal report counts, recent campus reports, and Home/Reports/Report/Profile navigation.
+- Registration and login with verified `@alustudent.com` email addresses.
+- Incident submission with a category, title, description, and location.
+- Live dashboard, search, category and status filters, and personal report summaries.
+- Report details and progress from Submitted to In progress to Resolved.
+- Owners can edit or delete their reports while they are Submitted.
+- Authorized staff can update report statuses. Firestore rules protect ownership and staff permissions.
 
-Editing/deletion, photo uploads, and staff status updates are the next stages. Firebase is configured for Android only.
+Incident photo uploads are not implemented because Firebase Storage requires billing, which has not been enabled. This is an outstanding assignment requirement.
 
-The [Firebase setup guide](docs/firebase_setup.md) covers project creation, email/password sign-in, and Android configuration.
+## Run
 
-The [Firestore setup guide](docs/firestore_setup.md) covers database creation and the initial user-profile schema.
-
-See the [incident submission guide](docs/incident_reporting.md) for the current report workflow and the [project checklist](docs/project_progress.md) for the remaining Canvas requirements.
-
-The [report browsing guide](docs/report_browsing.md) covers search, filters, details, and live status display.
-
-The [dashboard guide](docs/dashboard.md) covers the signed-in home screen, summary counts, and navigation.
-
-## Run locally
-
-Start an Android emulator in Android Studio or connect an Android device, then run:
+Install Flutter, start an Android emulator or connect an Android phone, then run:
 
 ```sh
 flutter pub get
-flutter run -d emulator-5554
+flutter run
 ```
+
+The Android app is configured for Firebase project `campus-bobo`. See [Firebase setup](docs/firebase_setup.md) for service configuration, role assignment, and the manual verification checklist.
 
 ## Checks
 
 ```sh
-dart format --output=none --set-exit-if-changed lib test integration_test
 flutter analyze
 flutter test test
-flutter test integration_test/firebase_startup_test.dart -d emulator-5554
 ```
 
-The integration test requires a running Android emulator. Use `flutter devices` to find its ID if it differs from `emulator-5554`. The [authentication guide](docs/authentication.md) includes a manual demo checklist and the local Auth emulator test.
+Backend access-control tests use the Firebase Authentication and Firestore emulators; instructions are in the setup guide. The `integration_test` directory also contains Android Firebase startup and authentication tests.
 
-## Project structure
+## Structure
 
-```text
-lib/
-  main.dart                  App entry point
-  app.dart                   MaterialApp configuration
-  firebase_options.dart      Generated Firebase platform configuration
-  core/theme/                Shared colors and theme
-  core/widgets/              Reusable visual components
-  features/auth/             Firebase repository, session state, and auth screens
-  features/welcome/          Welcome screen and reporting guide
-  features/profile/          Firestore profiles and saved account roles
-  features/incidents/        Report data, submission state, and reporting form
-  features/dashboard/        Home summary and primary navigation
-assets/fonts/                Poppins fonts and license
-test/                        Authentication state, validation, and screen checks
-integration_test/            Android Firebase startup and authentication checks
-```
+`lib/features` groups authentication, profiles, incidents, the dashboard, and welcome screens. Each feature separates presentation, state, and Firebase data access where needed. Shared styling and widgets are in `lib/core`.
 
-## Firebase services
+## Fonts
 
-Firebase Authentication handles registration, login, email verification, and logout. Provider manages the shared authentication state. Cloud Firestore will store user profiles and incident records, and Firebase Storage will hold incident photos.
-
-Firebase Core is initialized in `main.dart`. The generated Android configuration is checked into the repository; it identifies the Firebase app and does not grant administrative access. Firestore stores profiles under `users/{uid}` and reports under `incidents/{id}`. New profiles start as `student`, and existing profiles are preserved. Report creation rules enforce ownership, valid fields, server timestamps, and the initial submitted status. Report queries are enabled for verified campus members. Updates, deletion, and Storage setup are part of later stages.
-
-Student registration uses `@alustudent.com`. Unverified users remain on the verification screen, and restored accounts from other domains are blocked. The complete staff email domain still needs confirmation. Staff permissions will be assigned explicitly and enforced by Firebase rules; an email domain alone will not grant staff access.
-
-## Development workflow
-
-Work in small, meaningful checkpoints, with a target of more than 50 commits across setup, features, security rules, testing, and documentation. Describe each stage before changing code. Commit completed work after checking it, and push after each milestone or work session.
-
-Keep the implementation focused on the Canvas requirements. Prioritize the required workflows and keep optional features for later.
-
-Firebase Console tasks are documented as numbered steps. Console configuration is separate from repository changes and does not create a Git commit by itself.
-
-## Font license
-
-Poppins is bundled from the [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/poppins) under the SIL Open Font License. The license is included in `assets/fonts/OFL.txt`.
+Poppins is bundled under the SIL Open Font License. The licence is included in [assets/fonts/OFL.txt](assets/fonts/OFL.txt).

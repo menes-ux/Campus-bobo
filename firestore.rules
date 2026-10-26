@@ -19,6 +19,22 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['student', 'staff'];
     }
 
+    function isStaff() {
+      return hasCampusProfile()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff';
+    }
+
+    function validIncident(data, incidentId) {
+      return data.keys().hasAll(['reportedBy', 'title', 'description', 'location', 'category', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['reportedBy', 'title', 'description', 'location', 'category', 'status', 'createdAt', 'updatedAt'])
+        && data.title is string && data.title.size() >= 3 && data.title.size() <= 100
+        && data.description is string && data.description.size() >= 10 && data.description.size() <= 2000
+        && data.location is string && data.location.size() >= 3 && data.location.size() <= 120
+        && data.category in ['facilities', 'water', 'electricity', 'furniture', 'sanitation', 'safety']
+        && data.status in ['submitted', 'in_progress', 'resolved']
+        && data.updatedAt == request.time;
+    }
+
     match /users/{userId} {
       allow get: if isVerified() && request.auth.uid == userId;
 
@@ -40,24 +56,26 @@ service cloud.firestore {
       allow get, list: if hasCampusProfile();
 
       allow create: if hasCampusProfile()
-        && request.resource.data.keys().hasAll(['reportedBy', 'title', 'description', 'location', 'category', 'status', 'createdAt', 'updatedAt'])
-        && request.resource.data.keys().hasOnly(['reportedBy', 'title', 'description', 'location', 'category', 'status', 'createdAt', 'updatedAt'])
+        && validIncident(request.resource.data, incidentId)
         && request.resource.data.reportedBy == request.auth.uid
-        && request.resource.data.title is string
-        && request.resource.data.title.size() >= 3
-        && request.resource.data.title.size() <= 100
-        && request.resource.data.description is string
-        && request.resource.data.description.size() >= 10
-        && request.resource.data.description.size() <= 2000
-        && request.resource.data.location is string
-        && request.resource.data.location.size() >= 3
-        && request.resource.data.location.size() <= 120
-        && request.resource.data.category in ['facilities', 'water', 'electricity', 'furniture', 'sanitation', 'safety']
         && request.resource.data.status == 'submitted'
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.createdAt == request.time;
 
-      allow update, delete: if false;
+      allow update: if hasCampusProfile()
+        && validIncident(request.resource.data, incidentId)
+        && (
+          (resource.data.reportedBy == request.auth.uid
+            && resource.data.status == 'submitted'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'description', 'location', 'category', 'updatedAt']))
+          || (isStaff()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+            && ((resource.data.status == 'submitted' && request.resource.data.status == 'in_progress')
+              || (resource.data.status == 'in_progress' && request.resource.data.status == 'resolved')))
+        );
+
+      allow delete: if hasCampusProfile()
+        && resource.data.reportedBy == request.auth.uid
+        && resource.data.status == 'submitted';
     }
 
     match /{document=**} {

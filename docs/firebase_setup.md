@@ -1,113 +1,67 @@
-# Firebase setup
+﻿# Firebase setup and verification
 
-## 1. Create the project
+## Services
 
-1. Open the [Firebase Console](https://console.firebase.google.com/) in Chrome.
-2. Sign in with a Google account you control.
-3. Click **Create a project**, **Add project**, or the equivalent new-project button.
-4. Enter **Campus Bobo** as the project name.
-5. Accept the required terms if prompted, then click **Continue**.
-6. Skip optional Gemini features if they are offered. They are not needed for this app.
-7. Turn off **Enable Google Analytics for this project** if offered.
-8. Click **Create project** and wait for creation to finish.
-9. Click **Continue** to open the project dashboard.
+The Android app is registered with Firebase project `campus-bobo`, using package `com.example.campus_bobo`. Its configuration is in `android/app/google-services.json` and `lib/firebase_options.dart`.
 
-The console may group optional features differently; the goal is a Firebase project without optional Analytics or AI services.
+In Firebase Console, enable **Authentication → Sign-in method → Email/Password** and create the **Cloud Firestore** default database. The app sends verification emails and requires a verified `@alustudent.com` account before opening the dashboard.
 
-## 2. Enable email/password sign-in
+Deploy the Firestore rules from the project directory:
 
-1. Find **Authentication** in the project's left navigation menu. Expand its section if necessary.
-2. Click **Get started** if prompted.
-3. Open **Sign-in method** or **Sign-in providers**.
-4. Click **Email/Password**.
-5. Enable the **Email/Password** switch.
-6. Leave **Email link (passwordless sign-in)** disabled.
-7. Click **Save**.
-
-Email verification will be implemented in the Flutter app, with student registration restricted to `@alustudent.com`. Student and staff permissions will be enforced separately; enabling this provider does not grant staff privileges. The full staff email domain still needs confirmation before staff email validation is added.
-
-## 3. Find the project ID
-
-1. Click the gear beside **Project Overview**.
-2. Click **Project settings**.
-3. Open the **General** tab.
-4. Copy the **Project ID**, rather than the project name or project number.
-
-The project ID is a public identifier. Account passwords, access tokens, and service-account keys are not needed for this step.
-
-## 4. Install the local tools and sign in
-
-The Firebase project ID for Campus Bobo is `campus-bobo`. It is recorded as the default project in `.firebaserc`.
-
-Firebase CLI and FlutterFire CLI are installed on the development computer. To set them up on another computer, run:
-
-```powershell
-npm.cmd install -g firebase-tools
-dart pub global activate flutterfire_cli
+```sh
+firebase deploy --only firestore --project campus-bobo
 ```
 
-To sign in from your own VS Code terminal, run:
+Firebase Storage is not configured. Photo uploads remain an unmet assignment requirement because billing has been excluded from the project scope.
 
-```powershell
-firebase.cmd login
-```
+## Data and permissions
 
-1. If optional Gemini or CLI usage-reporting prompts appear, answer **No** to skip them.
-2. If Chrome opens, select the Google account that owns `campus-bobo`.
-3. Review the requested access and approve it to connect the CLI.
-4. If a sign-in link is printed instead, open it in Chrome and follow the terminal instructions.
-5. Complete any authorization-code step in your own terminal.
-6. Wait for the terminal to confirm successful login.
+`users/{uid}` stores `email`, `displayName`, `role`, and `createdAt`. Registration creates the `student` role. Clients cannot change roles.
 
-Login may behave differently when launched by an agent. Complete Google sign-in in your own terminal/browser session; it does not require sharing account credentials in chat.
+`incidents/{id}` stores `reportedBy`, `title`, `description`, `location`, `category`, `status`, `createdAt`, and `updatedAt`. Dates are server timestamps. Verified campus members with a saved profile can browse reports. Owners can edit the text/category or delete their reports only while the status is `submitted`. Only staff can advance statuses from `submitted` to `in_progress`, then `resolved`. Ownership, original timestamps, and unrelated fields are protected by rules.
 
-## 5. Connect Android after login
+## Set up the staff demonstration account
 
-The Android application ID is `com.example.campus_bobo` in `android/app/build.gradle.kts`. The app is registered with project `campus-bobo`, and FlutterFire CLI has generated the Android configuration.
+1. Register a second ALU student email account in the app and verify its email. Open the dashboard once so its profile is created.
+2. Open **Firebase Console → campus-bobo → Build → Authentication → Users**.
+3. Find the demonstration account and copy its **User UID**.
+4. Open **Build → Firestore Database → Data → users** and select the document with that UID.
+5. Edit the `role` field from `student` to `staff` and save it.
+6. Sign in to that account in the app. Open a report to see **Staff review**.
 
-From the project root, the configuration command is:
+For this coursework demonstration, the staff role is assigned to a verified ALU student email account. Role assignment is an administrator action in the Console; users cannot select or promote their own role in the app. A separate staff email domain has not been configured.
 
-```powershell
-& "$env:LOCALAPPDATA\Pub\Cache\bin\flutterfire.bat" configure --project=campus-bobo --platforms=android --android-package-name=com.example.campus_bobo
-```
+## Manual Android checks
 
-Using the executable's full path avoids changing Windows PATH for FlutterFire. Only Android is selected for this assignment's initial setup.
+1. Register, verify the email, sign in, sign out, and sign in again. Confirm an unverified or non-ALU account cannot access reports.
+2. Submit a report and check the matching Firestore record. Confirm empty or invalid fields show validation messages.
+3. Open the dashboard and Reports. Search, filter by category/status, and select **My reports**.
+4. Open your submitted report, edit its details, and confirm the changes appear in the app and Firestore. Delete another submitted report and confirm cancellation leaves it intact.
+5. Sign in as the staff demonstration account. Open another student's report and select **Mark in progress**, then **Mark resolved**. Check the Firestore status and updated timestamp.
+6. Return to the student account. Confirm the updated status appears and that staff controls are hidden. Reports under review cannot be edited or deleted by their owners.
+7. Restart the app and confirm the session and stored reports are restored. Test a disconnected network and retry.
 
-After configuration:
+## Automated checks
 
-1. Inspect the generated `lib/firebase_options.dart`, `android/app/google-services.json`, and any Gradle or Firebase configuration changes.
-2. Initialize Firebase before starting the Flutter app.
-3. Run analysis and the widget test.
-4. Check that the app still launches on the Android emulator.
-
-Firebase is initialized in `main.dart`, before `CampusBoboApp` is started. The configuration includes `lib/firebase_options.dart`, `android/app/google-services.json`, and FlutterFire platform mappings in `firebase.json`. The Google Services Gradle plugin is configured in the Android build files, and internet permission is declared in the main Android manifest for both debug and release builds.
-
-## 6. Check Android startup
-
-With the Android emulator running, use:
-
-```powershell
+```sh
 flutter analyze
 flutter test test
+```
+
+The backend rules test requires Node.js, Firebase CLI, and Java 21 or newer. Android Studio includes a suitable Java runtime; on Windows, select it for the current PowerShell session:
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+firebase emulators:exec --only auth,firestore --project demo-campus-bobo "node integration_test/security_rules_test.mjs"
+```
+
+This test uses a local demo project and checks permitted and denied operations for owners, other students, staff, unverified users, and external email accounts. It does not use production accounts or data.
+
+The Android startup check can be run with an emulator connected:
+
+```sh
 flutter test integration_test/firebase_startup_test.dart -d emulator-5554
 ```
 
-The integration test starts the app with the real Android Firebase plugin and verifies that the default Firebase app belongs to `campus-bobo` and that the authentication flow opens. It does not create accounts or incident records. An existing verified session may also create its missing Firestore profile through the normal app flow.
-
-After the test, start the normal app again with:
-
-```powershell
-flutter run -d emulator-5554
-```
-
-Run `flutter devices` to find the device ID if it differs. A full rebuild is required after native Firebase configuration changes; hot reload alone will not apply them.
-
-## Billing and later services
-
-Start on **Spark** for now. Cloud Storage for incident photos requires **Blaze**, which involves linking a billing account and can incur usage charges. Handle that step separately before implementing photo uploads. Firestore and its access rules will also be configured in a later stage.
-
-## References
-
-- [Official Flutter setup](https://firebase.google.com/docs/flutter/setup)
-- [Email/password authentication](https://firebase.google.com/docs/auth/flutter/password-auth)
-- [Cloud Storage requirements](https://firebase.google.com/docs/storage/flutter/start)
+The authentication flow test uses the Authentication emulator on port 9099. In a separate terminal run `firebase emulators:start --only auth --project campus-bobo`, then run `flutter test integration_test/auth_flow_test.dart -d emulator-5554`.

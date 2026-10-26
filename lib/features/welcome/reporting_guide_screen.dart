@@ -50,8 +50,8 @@ class ReportingGuideScreen extends StatelessWidget {
                   number: '02',
                   title: 'Point to the right place',
                   description:
-                      'Include the building, floor, or room. An optional photo can '
-                      'help staff understand the problem. Avoid including people or private information.',
+                      'Include the building, floor, or room and describe exactly '
+                      'where staff should look. Avoid including private information.',
                 ),
                 const SizedBox(height: 16),
                 const _GuideStep(

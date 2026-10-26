@@ -20,7 +20,11 @@ class IncidentSubmissionController extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
-  Future<bool> submit(IncidentDraft draft, String reportedBy) async {
+  Future<bool> submit(
+    IncidentDraft draft,
+    String reportedBy, {
+    String? editingId,
+  }) async {
     if (_submitting || _reportId != null || _disposed) return false;
     _error = draft.validationError;
     if (_error != null) {
@@ -30,7 +34,12 @@ class IncidentSubmissionController extends ChangeNotifier {
     _submitting = true;
     _notify();
     try {
-      _reportId = await _repository.submit(draft, reportedBy);
+      if (editingId == null) {
+        _reportId = await _repository.submit(draft, reportedBy);
+      } else {
+        await _repository.update(editingId, draft);
+        _reportId = editingId;
+      }
       return true;
     } on IncidentFailure catch (error) {
       _error = error.message;

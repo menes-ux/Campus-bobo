@@ -300,7 +300,7 @@ class _DashboardContent extends StatelessWidget {
                         MaterialPageRoute<void>(
                           builder: (_) => ReportDetailsScreen(
                             incidentId: report.id,
-                            viewerUid: profile.uid,
+                            viewer: profile,
                           ),
                         ),
                       ),

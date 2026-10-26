@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../profile/domain/user_profile.dart';
 import '../application/incident_submission_controller.dart';
+import '../domain/incident.dart';
 import '../domain/incident_category.dart';
 import '../domain/incident_draft.dart';
 import '../domain/incident_repository.dart';
@@ -12,24 +13,30 @@ import '../domain/incident_status.dart';
 import '../domain/incident_validators.dart';
 
 class ReportIncidentScreen extends StatelessWidget {
-  const ReportIncidentScreen({super.key, required this.reporter});
+  const ReportIncidentScreen({
+    super.key,
+    required this.reporter,
+    this.existing,
+  });
 
   final UserProfile reporter;
+  final Incident? existing;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) =>
           IncidentSubmissionController(context.read<IncidentRepository>()),
-      child: _IncidentForm(reporter: reporter),
+      child: _IncidentForm(reporter: reporter, existing: existing),
     );
   }
 }
 
 class _IncidentForm extends StatefulWidget {
-  const _IncidentForm({required this.reporter});
+  const _IncidentForm({required this.reporter, this.existing});
 
   final UserProfile reporter;
+  final Incident? existing;
 
   @override
   State<_IncidentForm> createState() => _IncidentFormState();
@@ -42,6 +49,18 @@ class _IncidentFormState extends State<_IncidentForm> {
   final _location = TextEditingController();
   final _formScroll = ScrollController();
   IncidentCategory? _category;
+
+  @override
+  void initState() {
+    super.initState();
+    final report = widget.existing;
+    if (report != null) {
+      _title.text = report.title;
+      _description.text = report.description;
+      _location.text = report.location;
+      _category = report.category;
+    }
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
@@ -57,7 +76,12 @@ class _IncidentFormState extends State<_IncidentForm> {
         category: _category!,
       ),
       widget.reporter.uid,
+      editingId: widget.existing?.id,
     );
+    if (mounted && saved && widget.existing != null) {
+      Navigator.of(context).pop();
+      return;
+    }
     if (mounted && !saved) _showFeedback();
   }
 
@@ -94,7 +118,9 @@ class _IncidentFormState extends State<_IncidentForm> {
       canPop: !submission.isSubmitting,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Report an incident'),
+          title: Text(
+            widget.existing == null ? 'Report an incident' : 'Edit report',
+          ),
           automaticallyImplyLeading: !submission.isSubmitting,
         ),
         body: SafeArea(
@@ -129,12 +155,16 @@ class _IncidentFormState extends State<_IncidentForm> {
                           ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
                         Text(
-                          'What needs\nattention?',
+                          widget.existing == null
+                              ? 'What needs\nattention?'
+                              : 'Update your report.',
                           style: text.headlineLarge,
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Share the details so campus staff can understand the issue and find it.',
+                          widget.existing == null
+                              ? 'Share the details so campus staff can understand the issue and find it.'
+                              : 'You can edit the details while your report is submitted.',
                           style: text.bodyLarge?.copyWith(
                             color: AppColors.muted,
                           ),
@@ -253,8 +283,10 @@ class _IncidentFormState extends State<_IncidentForm> {
                                     : const Icon(Icons.arrow_forward_rounded),
                                 label: Text(
                                   submission.isSubmitting
-                                      ? 'Submitting...'
-                                      : 'Submit report',
+                                      ? 'Saving...'
+                                      : widget.existing == null
+                                      ? 'Submit report'
+                                      : 'Save changes',
                                 ),
                               ),
                             ],

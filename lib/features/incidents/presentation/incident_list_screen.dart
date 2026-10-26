@@ -267,7 +267,7 @@ class _ReportBrowserState extends State<_ReportBrowser> {
                           MaterialPageRoute<void>(
                             builder: (_) => ReportDetailsScreen(
                               incidentId: reports[index].id,
-                              viewerUid: widget.viewer.uid,
+                              viewer: widget.viewer,
                             ),
                           ),
                         ),
