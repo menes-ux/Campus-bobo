@@ -3,7 +3,7 @@
 ## Current workflow
 
 1. Sign in with a verified ALU student account.
-2. From the account screen, tap **Report an incident**.
+2. From Home, tap **Report an incident**, or tap **Report** in the bottom navigation.
 3. Choose a category and enter a title, location, and description.
 4. Tap **Submit report**. The button is disabled while the request is running.
 5. A successful save shows **Report submitted**, **Status: Submitted**, and the Firestore document reference.

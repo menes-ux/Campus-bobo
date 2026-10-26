@@ -13,6 +13,7 @@ A Flutter mobile app for reporting campus issues and tracking their resolution w
 - Firestore profile rules deployed. Verified accounts create a student profile once and display their saved role.
 - Incident submission with category, title, description, location, validation, and an initial submitted status.
 - Live report browsing, text search, category/status filters, My reports, and report details with status progress.
+- Home dashboard with live personal report counts, recent campus reports, and Home/Reports/Report/Profile navigation.
 
 Editing/deletion, photo uploads, and staff status updates are the next stages. Firebase is configured for Android only.
 
@@ -23,6 +24,8 @@ The [Firestore setup guide](docs/firestore_setup.md) covers database creation an
 See the [incident submission guide](docs/incident_reporting.md) for the current report workflow and the [project checklist](docs/project_progress.md) for the remaining Canvas requirements.
 
 The [report browsing guide](docs/report_browsing.md) covers search, filters, details, and live status display.
+
+The [dashboard guide](docs/dashboard.md) covers the signed-in home screen, summary counts, and navigation.
 
 ## Run locally
 
@@ -57,6 +60,7 @@ lib/
   features/welcome/          Welcome screen and reporting guide
   features/profile/          Firestore profiles and saved account roles
   features/incidents/        Report data, submission state, and reporting form
+  features/dashboard/        Home summary and primary navigation
 assets/fonts/                Poppins fonts and license
 test/                        Authentication state, validation, and screen checks
 integration_test/            Android Firebase startup and authentication checks

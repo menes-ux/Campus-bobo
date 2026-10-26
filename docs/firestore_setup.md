@@ -52,7 +52,7 @@ The Firebase CLI compiles and deploys the rules during this step. Deployment of 
 ## Check your saved profile
 
 1. Open Campus Bobo and sign in with your verified student account.
-2. The account screen should show **Role: Student**.
+2. Open **Profile** from the bottom navigation. The account screen should show **Role: Student**.
 3. Open **Firestore Database > Data** in Firebase Console.
 4. Click **users**, then the document matching your Firebase Authentication UID.
 5. Check the stored email, display name, `student` role, and creation timestamp.

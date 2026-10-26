@@ -10,6 +10,8 @@
 - [x] Initial submitted status, server timestamps, and report ownership rules.
 - [x] Live report browsing, text search, category/status filters, and My reports.
 - [x] Report details with live status progress, location, dates, and reference.
+- [x] Dedicated Home dashboard with live personal counts, status cards, and recent campus reports.
+- [x] Home/Reports/Report/Profile navigation with summary-card shortcuts.
 
 ## Remaining app work
 
@@ -29,4 +31,4 @@
 
 ## Next checkpoint
 
-Try browsing, searching, and opening a saved report. Then add owner editing/deletion and the staff status workflow.
+Review the Home dashboard, its live counts, and bottom navigation. Then add owner editing/deletion and the staff status workflow.

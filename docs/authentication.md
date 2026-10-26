@@ -22,12 +22,12 @@ The form and controller both validate the student email domain. Firestore profil
 3. Enter your name, your own ALU student email, and matching passwords of at least eight characters.
 4. Tap **Create account**. The app should open **Check your inbox**.
 5. Open the verification email in your inbox or spam folder and click its verification link.
-6. Return to the app and tap **I have verified my email**. The verified account screen should appear.
-7. Tap **Sign out**, then sign in with the same email and password.
+6. Return to the app and tap **I have verified my email**. The Home dashboard should appear.
+7. Open **Profile**, tap **Sign out**, then sign in with the same email and password.
 8. Restart the app while signed in to check session restoration.
 9. In Firebase Console, open **Authentication > Users** to demonstrate the stored account.
 
-Email/password sign-in must be enabled in Firebase Console as described in the [setup guide](firebase_setup.md). The account screen is the signed-in landing screen for this stage; incident screens will be added next.
+Email/password sign-in must be enabled in Firebase Console as described in the [setup guide](firebase_setup.md). Home is the signed-in landing screen; Profile contains the account information and sign-out control.
 
 ## Automated checks
 

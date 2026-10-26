@@ -2,7 +2,7 @@
 
 ## Try the workflow
 
-1. Sign in and tap **Browse reports** on the account screen.
+1. Sign in and tap **Reports** in the bottom navigation, or **See all** on Home.
 2. Check that submitted reports appear newest first.
 3. Search by a word from a title, description, location, or report reference.
 4. Choose a category or status. Filters combine with the search text.
