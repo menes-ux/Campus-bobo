@@ -8,6 +8,8 @@ import 'features/auth/application/auth_controller.dart';
 import 'features/auth/data/firebase_auth_repository.dart';
 import 'features/auth/domain/auth_repository.dart';
 import 'features/auth/presentation/auth_gate.dart';
+import 'features/incidents/data/firestore_incident_repository.dart';
+import 'features/incidents/domain/incident_repository.dart';
 import 'features/profile/data/firestore_user_profile_repository.dart';
 import 'features/profile/domain/user_profile_repository.dart';
 
@@ -16,10 +18,12 @@ class CampusBoboApp extends StatelessWidget {
     super.key,
     this.authRepository,
     this.userProfileRepository,
+    this.incidentRepository,
   });
 
   final AuthRepository? authRepository;
   final UserProfileRepository? userProfileRepository;
+  final IncidentRepository? incidentRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +38,11 @@ class CampusBoboApp extends StatelessWidget {
           create: (_) =>
               userProfileRepository ??
               FirestoreUserProfileRepository(FirebaseFirestore.instance),
+        ),
+        Provider<IncidentRepository>(
+          create: (_) =>
+              incidentRepository ??
+              FirestoreIncidentRepository(FirebaseFirestore.instance),
         ),
       ],
       child: MaterialApp(
