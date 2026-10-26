@@ -13,6 +13,12 @@ service cloud.firestore {
         && request.auth.token.email.matches('^[^@]+@alustudent[.]com$');
     }
 
+    function hasCampusProfile() {
+      return isStudent()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['student', 'staff'];
+    }
+
     match /users/{userId} {
       allow get: if isVerified() && request.auth.uid == userId;
 
@@ -26,6 +32,30 @@ service cloud.firestore {
         && request.resource.data.displayName.size() <= 80
         && request.resource.data.role == 'student'
         && request.resource.data.createdAt == request.time;
+
+      allow list, update, delete: if false;
+    }
+
+    match /incidents/{incidentId} {
+      allow get: if hasCampusProfile();
+
+      allow create: if hasCampusProfile()
+        && request.resource.data.keys().hasAll(['reportedBy', 'title', 'description', 'location', 'category', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['reportedBy', 'title', 'description', 'location', 'category', 'status', 'createdAt', 'updatedAt'])
+        && request.resource.data.reportedBy == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.description is string
+        && request.resource.data.description.size() >= 10
+        && request.resource.data.description.size() <= 2000
+        && request.resource.data.location is string
+        && request.resource.data.location.size() >= 3
+        && request.resource.data.location.size() <= 120
+        && request.resource.data.category in ['facilities', 'water', 'electricity', 'furniture', 'sanitation', 'safety']
+        && request.resource.data.status == 'submitted'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
 
       allow list, update, delete: if false;
     }
