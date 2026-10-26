@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_auth_repository.dart';
+import '../helpers/fake_user_profile_repository.dart';
 
 Future<void> _reveal(
   WidgetTester tester,
@@ -30,7 +31,12 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(repository.close);
-    await tester.pumpWidget(CampusBoboApp(authRepository: repository));
+    await tester.pumpWidget(
+      CampusBoboApp(
+        authRepository: repository,
+        userProfileRepository: FakeUserProfileRepository(),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 

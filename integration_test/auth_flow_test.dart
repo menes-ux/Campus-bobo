@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
+import '../test/helpers/fake_user_profile_repository.dart';
+
 Future<void> _reveal(
   WidgetTester tester,
   Finder finder, {
@@ -110,7 +112,9 @@ void main() {
         'flow.${DateTime.now().millisecondsSinceEpoch}@alustudent.com';
     const password = 'Campus-test-password-1';
 
-    await tester.pumpWidget(const CampusBoboApp());
+    await tester.pumpWidget(
+      CampusBoboApp(userProfileRepository: FakeUserProfileRepository()),
+    );
     await tester.pumpAndSettle();
     await _tap(tester, find.text('Get started'));
     await _tap(tester, find.text('New here? Create an account'));

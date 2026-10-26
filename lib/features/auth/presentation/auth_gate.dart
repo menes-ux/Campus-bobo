@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../welcome/welcome_screen.dart';
+import '../../profile/presentation/user_profile_gate.dart';
 import '../application/auth_controller.dart';
-import 'account_screen.dart';
 import 'auth_form_screen.dart';
 import 'auth_widgets.dart';
 import 'verify_email_screen.dart';
@@ -32,7 +32,10 @@ class _AuthGateState extends State<AuthGate> {
                 onGetStarted: () => setState(() => _showSignIn = true),
               ),
       AuthSession.unverified => const VerifyEmailScreen(),
-      AuthSession.verified => const AccountScreen(),
+      AuthSession.verified => UserProfileGate(
+        key: ValueKey(auth.user!.uid),
+        user: auth.user!,
+      ),
       AuthSession.unsupportedEmail => AuthLayout(
         title: 'Use your student account.',
         description:

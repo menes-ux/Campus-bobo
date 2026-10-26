@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../welcome/reporting_guide_screen.dart';
+import '../../profile/domain/user_profile.dart';
 import '../application/auth_controller.dart';
 import 'auth_widgets.dart';
 
@@ -12,11 +13,11 @@ class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthController>();
-    final user = auth.user!;
+    final profile = context.watch<UserProfile>();
     final text = Theme.of(context).textTheme;
     return AuthLayout(
       title: 'Your campus account.',
-      description: 'You are signed in with your verified ALU student email.',
+      description: 'You are signed in with your verified ALU email.',
       icon: Icons.verified_user_outlined,
       children: [
         AuthFeedback(auth: auth),
@@ -29,15 +30,15 @@ class AccountScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(user.displayName ?? 'ALU student', style: text.titleLarge),
+              Text(profile.displayName, style: text.titleLarge),
               const SizedBox(height: 8),
-              SelectableText(user.email),
+              SelectableText(profile.email),
               const SizedBox(height: 16),
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.verified_outlined, size: 20),
-                  SizedBox(width: 8),
-                  Flexible(child: Text('Verified student')),
+                  const Icon(Icons.badge_outlined, size: 20),
+                  const SizedBox(width: 8),
+                  Flexible(child: Text('Role: ${profile.role.label}')),
                 ],
               ),
             ],
