@@ -22,12 +22,14 @@ Firebase Storage is not configured. Photo uploads remain an unmet assignment req
 
 ## Set up the staff demonstration account
 
-1. Register a second ALU student email account in the app and verify its email. Open the dashboard once so its profile is created.
+1. Register and verify an ALU student email account in the app. Open the dashboard once so its profile is created. You can use your existing account to test both roles by changing its saved role between tests.
 2. Open **Firebase Console → campus-bobo → Build → Authentication → Users**.
 3. Find the demonstration account and copy its **User UID**.
 4. Open **Build → Firestore Database → Data → users** and select the document with that UID.
 5. Edit the `role` field from `student` to `staff` and save it.
-6. Sign in to that account in the app. Open a report to see **Staff review**.
+6. Sign in to that account in the app. The **Staff dashboard** shows campus-wide report counts and reports to review. Its navigation contains **Dashboard**, **Reports**, and **Profile**. Open a report to see **Staff review** and the status buttons.
+
+Staff screens do not show report submission, personal report filters, or owner edit/delete actions. Student screens retain the reporting workflow. To return the demonstration account to student mode, change its saved role to `student` and sign out and back in.
 
 For this coursework demonstration, the staff role is assigned to a verified ALU student email account. Role assignment is an administrator action in the Console; users cannot select or promote their own role in the app. A separate staff email domain has not been configured.
 

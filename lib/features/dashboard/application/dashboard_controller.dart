@@ -7,12 +7,17 @@ import '../../incidents/domain/incident_repository.dart';
 import '../../incidents/domain/incident_status.dart';
 
 class DashboardController extends ChangeNotifier {
-  DashboardController(this._repository, this.viewerUid) {
+  DashboardController(
+    this._repository,
+    this.viewerUid, {
+    this.campusWide = false,
+  }) {
     retry();
   }
 
   final IncidentRepository _repository;
   final String viewerUid;
+  final bool campusWide;
   StreamSubscription<List<Incident>>? _subscription;
   List<Incident> _reports = const [];
   bool _loading = true;
@@ -21,14 +26,17 @@ class DashboardController extends ChangeNotifier {
 
   bool get isLoading => _loading;
   String? get error => _error;
-  int get myReportCount =>
-      _reports.where((report) => report.reportedBy == viewerUid).length;
-  int count(IncidentStatus status) => _reports
-      .where(
-        (report) => report.reportedBy == viewerUid && report.status == status,
-      )
-      .length;
+  Iterable<Incident> get _summaryReports => campusWide
+      ? _reports
+      : _reports.where((report) => report.reportedBy == viewerUid);
+  int get reportCount => _summaryReports.length;
+  int count(IncidentStatus status) =>
+      _summaryReports.where((report) => report.status == status).length;
   List<Incident> get recentReports => _reports.take(3).toList(growable: false);
+  List<Incident> get reportsToReview => [
+    ..._reports.where((report) => report.status == IncidentStatus.submitted),
+    ..._reports.where((report) => report.status == IncidentStatus.inProgress),
+  ].take(3).toList(growable: false);
 
   void _notify() {
     if (!_disposed) notifyListeners();

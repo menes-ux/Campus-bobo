@@ -18,25 +18,28 @@ class DashboardScreen extends StatelessWidget {
     required this.onReport,
     required this.onProfile,
     required this.onBrowse,
-    required this.onMyReports,
+    required this.onSummaryReports,
   });
 
   final UserProfile profile;
   final VoidCallback onReport;
   final VoidCallback onProfile;
   final VoidCallback onBrowse;
-  final ValueChanged<IncidentStatus?> onMyReports;
+  final ValueChanged<IncidentStatus?> onSummaryReports;
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (_) =>
-        DashboardController(context.read<IncidentRepository>(), profile.uid),
+    create: (_) => DashboardController(
+      context.read<IncidentRepository>(),
+      profile.uid,
+      campusWide: profile.role == UserRole.staff,
+    ),
     child: _DashboardContent(
       profile: profile,
       onReport: onReport,
       onProfile: onProfile,
       onBrowse: onBrowse,
-      onMyReports: onMyReports,
+      onSummaryReports: onSummaryReports,
     ),
   );
 }
@@ -47,14 +50,14 @@ class _DashboardContent extends StatelessWidget {
     required this.onReport,
     required this.onProfile,
     required this.onBrowse,
-    required this.onMyReports,
+    required this.onSummaryReports,
   });
 
   final UserProfile profile;
   final VoidCallback onReport;
   final VoidCallback onProfile;
   final VoidCallback onBrowse;
-  final ValueChanged<IncidentStatus?> onMyReports;
+  final ValueChanged<IncidentStatus?> onSummaryReports;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +65,10 @@ class _DashboardContent extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final firstName = profile.displayName.trim().split(RegExp(r'\s+')).first;
     final ready = !dashboard.isLoading && dashboard.error == null;
+    final isStaff = profile.role == UserRole.staff;
+    final reports = isStaff
+        ? dashboard.reportsToReview
+        : dashboard.recentReports;
     String number(int value) => ready ? '$value' : '—';
 
     return Scaffold(
@@ -91,12 +98,16 @@ class _DashboardContent extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Hello, ${firstName.isEmpty ? 'there' : firstName}.',
+                            isStaff
+                                ? 'Staff dashboard'
+                                : 'Hello, ${firstName.isEmpty ? 'there' : firstName}.',
                             style: text.headlineSmall,
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'Help make our campus better.',
+                            isStaff
+                                ? 'Review issues and keep campus moving.'
+                                : 'Help make our campus better.',
                             style: text.bodyMedium?.copyWith(
                               color: AppColors.muted,
                             ),
@@ -145,14 +156,18 @@ class _DashboardContent extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'See an issue\non campus?',
+                              isStaff
+                                  ? 'Campus issues,\nready for review.'
+                                  : 'See an issue\non campus?',
                               style: text.headlineSmall?.copyWith(fontSize: 28),
                             ),
                             const SizedBox(height: 10),
                             ConstrainedBox(
                               constraints: const BoxConstraints(maxWidth: 300),
                               child: Text(
-                                'Report it and help improve the spaces we share.',
+                                isStaff
+                                    ? 'Review submitted incidents and update their progress.'
+                                    : 'Report it and help improve the spaces we share.',
                                 style: text.bodyMedium,
                               ),
                             ),
@@ -160,13 +175,25 @@ class _DashboardContent extends StatelessWidget {
                             SizedBox(
                               width: double.infinity,
                               child: FilledButton.icon(
-                                onPressed: onReport,
+                                onPressed: isStaff
+                                    ? () => onSummaryReports(
+                                        IncidentStatus.submitted,
+                                      )
+                                    : onReport,
                                 style: FilledButton.styleFrom(
                                   backgroundColor: AppColors.ink,
                                   foregroundColor: Colors.white,
                                 ),
-                                icon: const Icon(Icons.add_rounded),
-                                label: const Text('Report an incident'),
+                                icon: Icon(
+                                  isStaff
+                                      ? Icons.fact_check_outlined
+                                      : Icons.add_rounded,
+                                ),
+                                label: Text(
+                                  isStaff
+                                      ? 'Review submitted reports'
+                                      : 'Report an incident',
+                                ),
                               ),
                             ),
                           ],
@@ -176,7 +203,10 @@ class _DashboardContent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 28),
-                Text('Your report summary', style: text.titleLarge),
+                Text(
+                  isStaff ? 'Campus report summary' : 'Your report summary',
+                  style: text.titleLarge,
+                ),
                 const SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, constraints) {
@@ -191,12 +221,12 @@ class _DashboardContent extends StatelessWidget {
                           width: width,
                           child: DashboardStatCard(
                             key: const ValueKey('dashboard-total'),
-                            label: 'My reports',
-                            value: number(dashboard.myReportCount),
+                            label: isStaff ? 'Total reports' : 'My reports',
+                            value: number(dashboard.reportCount),
                             icon: Icons.description_outlined,
                             background: AppColors.paleYellow,
                             accent: AppColors.ink,
-                            onTap: ready ? () => onMyReports(null) : null,
+                            onTap: ready ? () => onSummaryReports(null) : null,
                           ),
                         ),
                         SizedBox(
@@ -211,7 +241,8 @@ class _DashboardContent extends StatelessWidget {
                             background: AppColors.paleOrange,
                             accent: AppColors.orange,
                             onTap: ready
-                                ? () => onMyReports(IncidentStatus.submitted)
+                                ? () =>
+                                      onSummaryReports(IncidentStatus.submitted)
                                 : null,
                           ),
                         ),
@@ -227,7 +258,9 @@ class _DashboardContent extends StatelessWidget {
                             background: AppColors.paleBlue,
                             accent: AppColors.blue,
                             onTap: ready
-                                ? () => onMyReports(IncidentStatus.inProgress)
+                                ? () => onSummaryReports(
+                                    IncidentStatus.inProgress,
+                                  )
                                 : null,
                           ),
                         ),
@@ -243,7 +276,8 @@ class _DashboardContent extends StatelessWidget {
                             background: AppColors.paleGreen,
                             accent: AppColors.green,
                             onTap: ready
-                                ? () => onMyReports(IncidentStatus.resolved)
+                                ? () =>
+                                      onSummaryReports(IncidentStatus.resolved)
                                 : null,
                           ),
                         ),
@@ -256,13 +290,13 @@ class _DashboardContent extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Recent campus reports',
+                        isStaff ? 'Reports to review' : 'Recent campus reports',
                         style: text.titleMedium,
                       ),
                     ),
                     TextButton(
                       onPressed: onBrowse,
-                      child: const Text('See all'),
+                      child: Text(isStaff ? 'All reports' : 'See all'),
                     ),
                   ],
                 ),
@@ -281,19 +315,19 @@ class _DashboardContent extends StatelessWidget {
                       onRetry: dashboard.retry,
                     ),
                   )
-                else if (dashboard.recentReports.isEmpty)
+                else if (reports.isEmpty)
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: AppColors.canvas,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      'No campus reports yet. You can be the first to report an issue.',
+                    child: Text(
+                      isStaff ? 'No reports need review right now.' : 'No campus reports yet. You can be the first to report an issue.',
                     ),
                   )
                 else
-                  for (final report in dashboard.recentReports) ...[
+                  for (final report in reports) ...[
                     IncidentCard(
                       report: report,
                       onTap: () => Navigator.of(context).push(

@@ -14,7 +14,7 @@ import '../helpers/incident_fixtures.dart';
 void main() {
   late FakeIncidentRepository incidents;
 
-  setUp(() => incidents = FakeIncidentRepository()..reports = incidentFixtures());
+  setUp(() => incidents = FakeIncidentRepository()..reports = incidentFixtures()); 
   tearDown(() => incidents.close());
 
   Future<void> openDetails(

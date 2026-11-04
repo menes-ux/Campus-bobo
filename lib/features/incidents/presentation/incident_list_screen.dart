@@ -35,7 +35,9 @@ class IncidentListScreen extends StatelessWidget {
                 context.read<IncidentRepository>(),
                 viewer.uid,
               )
-              ..setOnlyMine(initiallyOnlyMine)
+              ..setOnlyMine(
+                viewer.role == UserRole.student && initiallyOnlyMine,
+              )
               ..setStatus(initialStatus),
         child: _ReportBrowser(viewer: viewer),
       ),
@@ -66,19 +68,24 @@ class _ReportBrowserState extends State<_ReportBrowser> {
     final list = context.watch<IncidentListController>();
     final reports = list.visibleReports;
     final text = Theme.of(context).textTheme;
+    final isStaff = widget.viewer.role == UserRole.staff;
     return Scaffold(
-      appBar: AppBar(title: const Text('Campus reports')),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.yellow,
-        foregroundColor: AppColors.ink,
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => ReportIncidentScreen(reporter: widget.viewer),
-          ),
-        ),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('New report'),
+      appBar: AppBar(
+        title: Text(isStaff ? 'Review reports' : 'Campus reports'),
       ),
+      floatingActionButton: isStaff
+          ? null
+          : FloatingActionButton.extended(
+              backgroundColor: AppColors.yellow,
+              foregroundColor: AppColors.ink,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ReportIncidentScreen(reporter: widget.viewer),
+                ),
+              ),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('New report'),
+            ),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
@@ -93,10 +100,17 @@ class _ReportBrowserState extends State<_ReportBrowser> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Campus, in focus.', style: text.headlineSmall),
+                        Text(
+                          isStaff
+                              ? 'Campus incident review'
+                              : 'Campus, in focus.',
+                          style: text.headlineSmall,
+                        ),
                         const SizedBox(height: 8),
                         Text(
-                          'Reports from your campus community.',
+                          isStaff
+                              ? 'Open a report to review its details and update its status.'
+                              : 'Reports from your campus community.',
                           style: text.bodyMedium?.copyWith(
                             color: AppColors.muted,
                           ),
@@ -201,12 +215,13 @@ class _ReportBrowserState extends State<_ReportBrowser> {
                           spacing: 12,
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            FilterChip(
-                              label: const Text('My reports'),
-                              selected: list.onlyMine,
-                              selectedColor: AppColors.paleYellow,
-                              onSelected: list.setOnlyMine,
-                            ),
+                            if (!isStaff)
+                              FilterChip(
+                                label: const Text('My reports'),
+                                selected: list.onlyMine,
+                                selectedColor: AppColors.paleYellow,
+                                onSelected: list.setOnlyMine,
+                              ),
                             if (list.hasFilters)
                               TextButton(
                                 onPressed: () {

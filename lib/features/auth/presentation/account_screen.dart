@@ -21,10 +21,13 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthController>();
     final profile = context.watch<UserProfile>();
+    final isStaff = profile.role == UserRole.staff;
     final text = Theme.of(context).textTheme;
     return AuthLayout(
       title: 'Your campus account.',
-      description: 'You are signed in with your verified ALU email.',
+      description: isStaff
+          ? 'Review campus incidents and track their resolution.'
+          : 'You are signed in with your verified ALU email.',
       icon: Icons.verified_user_outlined,
       children: [
         AuthFeedback(auth: auth),
@@ -52,28 +55,32 @@ class AccountScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        FilledButton.icon(
-          onPressed: auth.isBusy ? null : onReportIncident,
-          icon: const Icon(Icons.add_rounded),
-          label: const Text('Report an incident'),
-        ),
-        const SizedBox(height: 12),
+        if (!isStaff) ...[
+          FilledButton.icon(
+            onPressed: auth.isBusy ? null : onReportIncident,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Report an incident'),
+          ),
+          const SizedBox(height: 12),
+        ],
         OutlinedButton.icon(
           onPressed: auth.isBusy ? null : onBrowseReports,
           icon: const Icon(Icons.view_list_outlined),
-          label: const Text('Browse reports'),
+          label: Text(isStaff ? 'Review reports' : 'Browse reports'),
         ),
         const SizedBox(height: 12),
-        OutlinedButton.icon(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const ReportingGuideScreen(),
+        if (!isStaff) ...[
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const ReportingGuideScreen(),
+              ),
             ),
+            icon: const Icon(Icons.menu_book_outlined),
+            label: const Text('Reporting guide'),
           ),
-          icon: const Icon(Icons.menu_book_outlined),
-          label: const Text('Reporting guide'),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
         AuthSubmitButton(
           label: 'Sign out',
           isBusy: auth.isBusy,

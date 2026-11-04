@@ -65,9 +65,8 @@ class _ReportDetailsState extends State<_ReportDetails> {
     await _run(
       () => context.read<IncidentRepository>().delete(report.id),
       onSuccess: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Report deleted.')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Report deleted.')));
         Navigator.of(context).pop();
       },
     );
@@ -198,7 +197,7 @@ class _DetailsContent extends StatelessWidget {
               children: [
                 IncidentStatusBadge(status: report.status),
                 Text(report.category.label, style: text.titleSmall),
-                if (isOwner) const Text('Your report'),
+                if (isOwner && !isStaff) const Text('Your report'),
               ],
             ),
             const SizedBox(height: 24),
@@ -218,7 +217,9 @@ class _DetailsContent extends StatelessWidget {
             Text('Description', style: text.titleMedium),
             const SizedBox(height: 8),
             SelectableText(report.description, style: text.bodyLarge),
-            if (isOwner && report.status == IncidentStatus.submitted) ...[
+            if (!isStaff &&
+                isOwner &&
+                report.status == IncidentStatus.submitted) ...[
               const SizedBox(height: 24),
               OutlinedButton.icon(
                 onPressed: busy ? null : onEdit,

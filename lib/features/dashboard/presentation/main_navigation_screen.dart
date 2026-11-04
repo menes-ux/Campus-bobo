@@ -22,8 +22,21 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _reportVersion = 0;
   bool _onlyMine = false;
   IncidentStatus? _status;
+  bool get _isStaff => widget.profile.role == UserRole.staff;
+
+  @override
+  void didUpdateWidget(MainNavigationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.profile.role != widget.profile.role) {
+      _selected = 0;
+      _onlyMine = false;
+      _status = null;
+      _reportVersion++;
+    }
+  }
 
   void _openReportForm() {
+    if (_isStaff) return;
     FocusManager.instance.primaryFocus?.unfocus();
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -43,10 +56,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   void _select(int index) {
     FocusManager.instance.primaryFocus?.unfocus();
-    if (index == 2) {
+    if (!_isStaff && index == 2) {
       _openReportForm();
     } else {
-      setState(() => _selected = index);
+      setState(() => _selected = index == 3 ? 2 : index);
     }
   }
 
@@ -58,17 +71,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     },
     child: Scaffold(
       body: IndexedStack(
-        index: _selected == 3 ? 2 : _selected,
+        index: _selected,
         children: [
           TickerMode(
             enabled: _selected == 0,
             child: DashboardScreen(
+              key: ValueKey(widget.profile.role),
               profile: widget.profile,
               onReport: _openReportForm,
-              onProfile: () => _select(3),
+              onProfile: () => setState(() => _selected = 2),
               onBrowse: () => _openReports(),
-              onMyReports: (status) =>
-                  _openReports(onlyMine: true, status: status),
+              onSummaryReports: (status) =>
+                  _openReports(onlyMine: !_isStaff, status: status),
             ),
           ),
           TickerMode(
@@ -81,7 +95,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
           ),
           TickerMode(
-            enabled: _selected == 3,
+            enabled: _selected == 2,
             child: AccountScreen(
               onBrowseReports: () => _openReports(),
               onReportIncident: _openReportForm,
@@ -94,7 +108,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           border: Border(top: BorderSide(color: AppColors.border)),
         ),
         child: NavigationBar(
-          selectedIndex: _selected,
+          selectedIndex: !_isStaff && _selected == 2 ? 3 : _selected,
           onDestinationSelected: _select,
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
@@ -110,26 +124,31 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               color: AppColors.ink,
             ),
           ),
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
-              label: 'Home',
+              icon: Icon(
+                _isStaff ? Icons.dashboard_outlined : Icons.home_outlined,
+              ),
+              selectedIcon: Icon(
+                _isStaff ? Icons.dashboard_rounded : Icons.home_rounded,
+              ),
+              label: _isStaff ? 'Dashboard' : 'Home',
             ),
-            NavigationDestination(
+            const NavigationDestination(
               icon: Icon(Icons.description_outlined),
               selectedIcon: Icon(Icons.description_rounded),
               label: 'Reports',
             ),
-            NavigationDestination(
-              icon: CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColors.yellow,
-                child: Icon(Icons.add_rounded, color: AppColors.ink),
+            if (!_isStaff)
+              const NavigationDestination(
+                icon: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.yellow,
+                  child: Icon(Icons.add_rounded, color: AppColors.ink),
+                ),
+                label: 'Report',
               ),
-              label: 'Report',
-            ),
-            NavigationDestination(
+            const NavigationDestination(
               icon: Icon(Icons.person_outline_rounded),
               selectedIcon: Icon(Icons.person_rounded),
               label: 'Profile',

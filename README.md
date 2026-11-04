@@ -9,7 +9,7 @@ Campus Bobo is a Flutter Android application for reporting campus incidents and 
 - Live dashboard, search, category and status filters, and personal report summaries.
 - Report details and progress from Submitted to In progress to Resolved.
 - Owners can edit or delete their reports while they are Submitted.
-- Authorized staff can update report statuses. Firestore rules protect ownership and staff permissions.
+- Staff have a dedicated dashboard with campus-wide counts and reports awaiting review. Their navigation focuses on reviewing reports and updating statuses. Firestore rules protect ownership and staff permissions.
 
 Incident photo uploads are not implemented because Firebase Storage requires billing, which has not been enabled. This is an outstanding assignment requirement.
 
